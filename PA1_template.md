@@ -1,19 +1,13 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: "Guillermo Perasso"
-date: "Friday, September 18, 2015"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+Guillermo Perasso  
+Friday, September 18, 2015  
 
 Loading and preprocessing the data
 
-```{r setoptions,echo=TRUE}
 
+```r
 library(lattice)
 activity <- read.csv("activity.csv")
-
 ```
 
 ### Dataset: Activity monitoring data
@@ -33,12 +27,28 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 - An histogram shows the total number of steps taken each day.
 - Then the mean and median of the total number of steps taken per day are shown.
 
-```{r}
+
+```r
 actPday <- aggregate(steps ~ date, activity, sum)
 hist(actPday$steps, main="number of steps per day",xlab="steps", col="green", breaks = 10)
-mean(actPday$steps)
-median(actPday$steps)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-1-1.png) 
+
+```r
+mean(actPday$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(actPday$steps)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -46,17 +56,28 @@ median(actPday$steps)
 
 This is a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r}
+
+```r
 actAvgInterval <- aggregate(steps ~ interval, activity, mean)
 plot(x = actAvgInterval$interval, y = actAvgInterval$steps, type = "l") 
-#mean(actPday$steps)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
+#mean(actPday$steps)
 ```
 
 The 5-minute interval, on average across all the days in the dataset, that contains the maximum number of steps is calculated here:
 
-```{r}
+
+```r
 actAvgInterval[which.max(actAvgInterval$steps), ]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 the value is 08:35 
@@ -67,8 +88,13 @@ the value is 08:35
 
 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 sum(is.na(activity$steps))
+```
+
+```
+## [1] 2304
 ```
 
 Devise a strategy for filling in all of the missing values in the dataset. 
@@ -78,7 +104,8 @@ Create a new dataset that is equal to the original dataset but with the missing 
 
 Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
 
-```{r}
+
+```r
 actFilled <- activity
 for (i in 1:nrow(actFilled)){
     if(is.na(actFilled$steps[i])){
@@ -89,14 +116,27 @@ for (i in 1:nrow(actFilled)){
 
 actPdayFilled <- aggregate(steps ~ date, actFilled, sum)
 hist(actPdayFilled$steps, main="number of steps per day",xlab="steps", col="green", breaks = 10)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 - Show the Mean and Median of the new dataset: 
 
-```{r}
+
+```r
 mean(actPdayFilled$steps)
+```
+
+```
+## [1] 10765.64
+```
+
+```r
 median(actPdayFilled$steps)
+```
+
+```
+## [1] 10762
 ```
 
 
@@ -113,7 +153,8 @@ The total daily number of steps increases as a result of added values, specially
 
 Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 actFilled$day <- "weekday"
 actFilled$day[weekdays(as.Date(actFilled$date), abb=T) %in% c("Sat","Sun")] <- "weekend"
 ```
@@ -121,12 +162,15 @@ actFilled$day[weekdays(as.Date(actFilled$date), abb=T) %in% c("Sat","Sun")] <- "
 
 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
-```{r}
+
+```r
 meanStepInt <- aggregate(steps ~ interval + day, data=actFilled, FUN="mean")
 xyplot(steps ~ interval | day, data=meanStepInt, type="l", grid=T, layout=c(1,2), 
        ylab="Number of steps", xlab="5-min. intervals", 
        main="Mean 5-min. intervals: Weekdays vs. Weekends")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
 
 According to these charts, the number of steps are high for all intervals during weekend days, whereas they are concentrated in the morning hours for weekdays.
 
